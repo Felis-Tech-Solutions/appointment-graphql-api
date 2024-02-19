@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+    php:
+        container_name: aqa-php
+        build:
+            context: ./
+            dockerfile: "./docker/php/Dockerfile"
+            args:
+                - BUILD_UID=${DOCKER_UID}
+                - BUILD_GID=${DOCKER_GID}
+        environment:
+            PHP_IDE_CONFIG: "serverName=host.docker.internal"
+        working_dir: /var/www/html
+        networks:
+            - default
+        volumes:
+            - ./:/var/www/html:cached
+            - ./node_modules:/var/www/html/node_modules:delegated
+            - ./public:/var/www/html/public:delegated
+
+    nginx:
+        container_name: aqa-nginx
+        image: wodby/nginx
+        environment:
+            NGINX_STATIC_OPEN_FILE_CACHE: "off"
+            NGINX_ERROR_LOG_LEVEL: debug
+            NGINX_BACKEND_HOST: php
+            NGINX_VHOST_PRESET: php
+            NGINX_SERVER_ROOT: /var/www/html/public
+        depends_on:
+            - php
+            - mariadb
+        volumes:
+            - ./public:/var/www/html/public:delegated
+            - ./storage/app/public:/var/www/html/public/storage:delegated
+        networks:
+            - default
+            - traefik-gateway
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=traefik-gateway"
+            - "traefik.http.routers.aqa-nginx.rule=Host(`vanrijncoating-portal.localhost`)"
+            - "traefik.http.routers.aqa-nginx.entrypoints=http"
+            - "traefik.http.routers.aqa-nginx.tls=false"
+    #      - "traefik.http.routers.aqa-nginx.rule=Host(`vanrijncoating-portal.dev`)"
+    #      - "traefik.http.routers.aqa-nginx.entrypoints=https"
+    #      - "traefik.http.routers.aqa-nginx.tls=true"
+
+    mariadb:
+        container_name: aqa-mariadb
+        image: mariadb:10.4
+        command: --init-file /data/application/init.sql
+        volumes:
+            - ./docker/mariadb/init.sql:/data/application/init.sql
+            - mariadb:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: aqa
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: aqa
+            MYSQL_PASSWORD: aqa
+        ports:
+            - "127.0.0.1:34031:3306"
+#  mailhog:
+#    image: mailhog/mailhog
+#    container_name: aqa-mailhog
+#    networks:
+#      - default
+#      - traefik-gateway
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=traefik-gateway"
+#      - "traefik.http.services.aqa-mailhog.loadbalancer.server.port=8025"
+#      - "traefik.http.routers.aqa-mailhog.rule=Host(`mailhog.vanrijncoating-portal.localhost`)"
+#      - "traefik.http.routers.aqa-mailhog.entrypoints=https"
+#      - "traefik.http.routers.aqa-mailhog.tls=true"
+
+volumes:
+    mariadb:
+        driver: local
+
+# Make the externally created network "traefik-gateway" available as network "default"
+# docker network create traefik-gateway
+networks:
+    traefik-gateway:
+        name: traefik-gateway
+        external: true
