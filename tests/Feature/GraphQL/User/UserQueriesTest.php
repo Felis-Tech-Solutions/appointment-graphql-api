@@ -11,7 +11,7 @@ it('can retrieve single users', closure: function () {
     ];
 
     $response = $this->graphQL(
-        /** @lang GraphQL */
+    /** @lang GraphQL */
         '
             query getUsers($id: ID!) {
                 user(id: $id) {
@@ -34,15 +34,15 @@ it('can retrieve single users', closure: function () {
     $response->assertSuccessful();
     $response->assertJson([
         'data' => [
-            'user'  => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
+            'user' => [
+                'id'              => $user->id,
+                'name'            => $user->name,
+                'email'           => $user->email,
                 'emailVerifiedAt' => $user->email_verified_at,
-                'createdAt' => $user->created_at,
-                'updatedAt' => $user->updated_at,
-                'deletedAt' => $user->deleted_at,
-                'groups' => [],
+                'createdAt'       => $user->created_at,
+                'updatedAt'       => $user->updated_at,
+                'deletedAt'       => $user->deleted_at,
+                'groups'          => [],
             ],
         ],
     ]);
@@ -54,12 +54,12 @@ it('can retrieve several users', function () {
 
     $variables = [
         'first' => $count,
-        'page' => 1,
+        'page'  => 1,
     ];
 
     $this->actingAs($users[0]);
     $response = $this->graphQL(
-        /** @lang GraphQL */
+    /** @lang GraphQL */
         '
             query users(
                 $first: Int!
@@ -107,13 +107,84 @@ it('can retrieve several users', function () {
     }
 });
 
+it('can get a user by name', function () {
+    $testName = "Test user name";
+
+    $user = User::factory([
+        'name' => $testName,
+    ])->create();
+
+    $this->actingAs($user);
+
+    $variables = [
+        'first' => 1,
+        'page'  => 1,
+        'name'  => $user->name,
+    ];
+
+    $response = $this->graphQL(
+    /** @lang GraphQL */
+        '
+            query users(
+                $first: Int!
+                $page: Int
+                $id: [ID!]
+                $email: [Email!]
+                $name: String
+                $emailVerified: Boolean
+                $orderBy: [QueryUsersOrderByOrderByClause!]
+            ) {
+                users(
+                    first: $first
+                    page: $page
+                    id: $id
+                    email: $email
+                    name: $name
+                    emailVerified: $emailVerified
+                    orderBy: $orderBy
+                ) {
+                    data {
+                        id
+                        name
+                        email
+                        emailVerifiedAt
+                        createdAt
+                        updatedAt
+                        deletedAt
+                    }
+                }
+            }
+       ', variables: $variables
+    );
+
+    $response->assertSuccessful();
+    $response->assertJson([
+        'data' => [
+            'users' => [
+                'data' => [
+                    [
+                        'id'              => $user->id,
+                        'name'            => $testName,
+                        'email'           => $user->email,
+                        'emailVerifiedAt' => $user->email_verified_at,
+                        'createdAt'       => $user->created_at,
+                        'updatedAt'       => $user->updated_at,
+                        'deletedAt'       => $user->deleted_at,
+                    ],
+                ],
+
+            ],
+        ],
+    ]);
+});
+
 it('can get all users ', function () {
     $count = 10;
     $users = User::factory()->count($count)->create();
 
     $this->actingAs($users[0]);
     $response = $this->graphQL(
-        /** @lang GraphQL */
+    /** @lang GraphQL */
         '
             query allUsers
             {

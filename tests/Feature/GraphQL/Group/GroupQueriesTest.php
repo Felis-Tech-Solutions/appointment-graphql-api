@@ -20,7 +20,7 @@ it('can retrieve single group', function () {
                     active
                 }
             }
-        ' , variables: $variables
+        ', variables: $variables
     );
 
     $response->assertSuccessful();
@@ -81,6 +81,64 @@ it('can retrieve several groups', function () {
     }
 });
 
+it('can get a user by name', function () {
+    $groupName = "Test group name";
+
+    $group = Group::factory([
+        'name' => 'Test group name',
+    ])->create();
+
+    $variables = [
+        'first' => 1,
+        'page'  => 1,
+        'name'  => $groupName,
+    ];
+
+    $response = $this->graphQL(
+    /** @lang GraphQL */
+        '
+           query getGroups(
+                $first: Int!
+                $page: Int
+                $id: [ID!]
+                $name: String
+                $active: Boolean
+            ) {
+                groups(
+                    first: $first
+                    page: $page
+                    id: $id
+                    name: $name
+                    active: $active
+                ) {
+                    data {
+                        id
+                        name
+                        active
+                    }
+                }
+            }
+        ', variables: $variables
+    );
+
+    $response->assertSuccessful();
+
+    $response->assertJson([
+        'data' => [
+            'groups' => [
+                'data' => [
+                    [
+                        'id'     => (string)$group->id,
+                        'name'   => $groupName,
+                        'active' => $group->active,
+                    ],
+                ],
+            ],
+        ],
+    ]);
+
+});
+
 it('can retrieve all groups', function () {
     $count  = 10;
     $groups = Group::factory()->count($count)->create();
@@ -116,7 +174,7 @@ it('can retrieve all groups', function () {
                 }
             }
         ', variables: $variables
-        );
+    );
 
     $response->assertSuccessful();
     $data = $response->json('data.groups.data');
