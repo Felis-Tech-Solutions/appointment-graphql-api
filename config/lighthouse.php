@@ -73,8 +73,9 @@ return [
     |
     */
 
-    'schema_path' => base_path('graphql/schema.graphql'),
-
+    'schema' => [
+        'register' => base_path('graphql/schema.graphql'),
+    ],
     /*
     |--------------------------------------------------------------------------
     | Schema Cache
