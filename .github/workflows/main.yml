@@ -12,6 +12,22 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: passw0rd
+          MYSQL_DATABASE: appointment_graphql_api_test
+          MYSQL_USER: aqa
+          MYSQL_PASSWORD: aqa
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root --password=passw0rd --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - uses: actions/checkout@v2
 
@@ -19,19 +35,25 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, mysql
+          coverage: none
 
-      - name: Setup Environment
+      - name: Install MySQL Client
+        run: sudo apt-get install -y mysql-client
+
+      - name: Configure application
         run: |
           cp .env.example.github .env
-          echo "DB_CONNECTION=sqlite" >> .env
-          echo "DB_DATABASE=:memory:" >> .env
-          echo "CACHE_DRIVER=array" >> .env
-          echo "QUEUE_CONNECTION=sync" >> .env
-          echo "SESSION_DRIVER=array" >> .env
-          # Add any other necessary environment configuration here
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=appointment_graphql_api_test" >> .env
+          echo "DB_USERNAME=aqa" >> .env
+          echo "DB_PASSWORD=aqa" >> .env
+          # Other necessary environment configuration
 
       - name: Install dependencies
-        run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
       - name: Generate key
         run: php artisan key:generate
@@ -39,8 +61,11 @@ jobs:
       - name: Clear GraphQL schema cache
         run: php artisan lighthouse:clear-cache
 
-      - name: Database Setup
-        run: php artisan migrate --seed --env=testing
+      - name: Wait for MySQL
+        run: until mysqladmin ping -h 127.0.0.1 -u root --password=passw0rd; do sleep 1; done
 
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
+      - name: Migrate and Seed Database
+        run: php artisan migrate --seed
+
+      - name: Run Tests
         run: vendor/bin/phpunit
