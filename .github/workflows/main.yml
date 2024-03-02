@@ -58,11 +58,14 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
 
+      - name: Output GraphQL Schema Files
+        run: cat graphql/**/*.graphql
+
       - name: Clear GraphQL schema cache
         run: php artisan lighthouse:clear-cache
 
-      - name: Generate Lighthouse Schema Cache
-        run: php artisan lighthouse:cache
+      - name: Generate Lighthouse Schema Cache (if applicable)
+        run: php artisan lighthouse:cache && cat bootstrap/cache/lighthouse-schema.graphql
 
       - name: Wait for MySQL
         run: until mysqladmin ping -h 127.0.0.1 -u root --password=passw0rd; do sleep 1; done
@@ -72,6 +75,8 @@ jobs:
 
       - name: Run Tests
         env:
+          APP_ENV: testing
+          APP_DEBUG: true
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
