@@ -68,4 +68,4 @@ jobs:
         run: php artisan migrate --seed
 
       - name: Run Tests
-        run: vendor/bin/phpunit
+        run: ./vendor/bin/pest
