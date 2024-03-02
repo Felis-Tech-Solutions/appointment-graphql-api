@@ -42,15 +42,7 @@ jobs:
         run: sudo apt-get install -y mysql-client
 
       - name: Configure application
-        run: |
-          cp .env.example.github .env
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=appointment_graphql_api_test" >> .env
-          echo "DB_USERNAME=aqa" >> .env
-          echo "DB_PASSWORD=aqa" >> .env
-
+        run: cp .env.testing.github .env.testing
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
