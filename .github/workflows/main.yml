@@ -52,6 +52,10 @@ jobs:
       - name: Storage Permission
         run: chmod -R 777 storage bootstrap/cache
 
+      - name: Clear GraphQL schema cache
+        run: php artisan lighthouse:clear-cache
+
+
       - name: Database Setup
         env:
           DB_CONNECTION: mysql
