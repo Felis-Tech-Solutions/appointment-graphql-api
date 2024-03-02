@@ -62,6 +62,9 @@ jobs:
       - name: Output GraphQL Schema Files
         run: cat graphql/**/*.graphql
 
+      - name: Print GraphQL Schema
+        run: php artisan lighthouse:print-schema
+
       - name: Wait for MySQL
         run: until mysqladmin ping -h 127.0.0.1 -u root --password=passw0rd; do sleep 1; done
 
