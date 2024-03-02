@@ -17,7 +17,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: aqa
-          MYSQL_DATABASE: appointment_graphql_api
+          MYSQL_DATABASE: appointment_graphql_api_test
           MYSQL_USER: aqa
           MYSQL_PASSWORD: aqa
         ports:
