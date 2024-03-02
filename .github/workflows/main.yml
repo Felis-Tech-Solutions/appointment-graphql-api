@@ -41,7 +41,10 @@ jobs:
       - name: Install MySQL Client
         run: sudo apt-get install -y mysql-client
 
-      - name: Configure application
+      - name: Copy .env file
+        run: cp .env.example.github .env
+
+      - name: Copy .env testing file
         run: cp .env.testing.github .env.testing
 
       - name: Install dependencies
