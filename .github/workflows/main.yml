@@ -70,8 +70,9 @@ jobs:
       - name: Run Tests
         env:
           DB_CONNECTION: mysql
-          DB_DATABASE: laravel
+          DB_HOST: 127.0.0.1
           DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: passw0rd
+          DB_DATABASE: appointment_graphql_api_test
+          DB_USERNAME: aqa
+          DB_PASSWORD: aqa
         run: ./vendor/bin/pest
