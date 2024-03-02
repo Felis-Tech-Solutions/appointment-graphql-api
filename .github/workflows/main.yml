@@ -50,7 +50,7 @@ jobs:
           echo "DB_DATABASE=appointment_graphql_api_test" >> .env
           echo "DB_USERNAME=aqa" >> .env
           echo "DB_PASSWORD=aqa" >> .env
-          # Other necessary environment configuration
+
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
@@ -83,4 +83,6 @@ jobs:
           DB_DATABASE: appointment_graphql_api_test
           DB_USERNAME: aqa
           DB_PASSWORD: aqa
+          LIGHTHOUSE_QUERY_CACHE_ENABLE: false
+
         run: ./vendor/bin/pest
