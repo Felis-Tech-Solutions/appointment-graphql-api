@@ -8,26 +8,9 @@ on:
     branches:
       - '*'
 
-env:
-  DB_HOST: 127.0.0.1
-
 jobs:
   tests:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: passw0rd
-          MYSQL_DATABASE: laravel
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - uses: actions/checkout@v2
@@ -37,11 +20,15 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Copy .env file
-        run: cp .env.example.github .env
-
-      - name: Copy .env testing file
-        run: cp .env.testing.github .env.testing
+      - name: Setup Environment
+        run: |
+          cp .env.example.github .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=:memory:" >> .env
+          echo "CACHE_DRIVER=array" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
+          echo "SESSION_DRIVER=array" >> .env
+          # Add any other necessary environment configuration here
 
       - name: Install dependencies
         run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
@@ -49,27 +36,11 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
 
-      - name: Storage Permission
-        run: chmod -R 777 storage bootstrap/cache
-
       - name: Clear GraphQL schema cache
         run: php artisan lighthouse:clear-cache
 
-
       - name: Database Setup
-        env:
-          DB_CONNECTION: mysql
-          DB_DATABASE: laravel
-          DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: passw0rd
-        run: php artisan migrate:fresh --seed --force
+        run: php artisan migrate --seed --env=testing
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
-        env:
-          DB_CONNECTION: mysql
-          DB_DATABASE: laravel
-          DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: passw0rd
-        run: php artisan test
+        run: vendor/bin/phpunit
