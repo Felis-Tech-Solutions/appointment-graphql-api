@@ -5,8 +5,14 @@ use App\Models\Group;
 
 it('can create a group', function () {
     $this->actingAs(User::factory()->create());
-
     $testGroupName = 'test group';
+    $variables = [
+        'input' => [
+            'name'   => $testGroupName,
+            'active' => true,
+        ],
+    ];
+
     $response      = $this->graphQL(
     /** @lang GraphQL */
         '
@@ -20,12 +26,8 @@ it('can create a group', function () {
                     deletedAt
                 }
             }
-        ', [
-        'input' => [
-            'name'   => $testGroupName,
-            'active' => true,
-        ],
-    ]);
+        ', variables: $variables,
+    );
 
     $response->assertSuccessful();
     $response->assertJsonStructure([

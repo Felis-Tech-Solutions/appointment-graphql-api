@@ -14,6 +14,7 @@ final class GroupUpdateInputValidator extends Validator
     public function rules(): array
     {
         return [
+            'id'                            => ['required', 'numeric'],
             'name'                          => ['required', 'string'],
             'active'                        => ['required', 'boolean'],
             'groups.connect'                => ['sometimes', 'array'],

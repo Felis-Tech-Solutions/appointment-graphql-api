@@ -152,24 +152,18 @@ it('can retrieve all groups', function () {
     $response = $this->graphQL(
     /** @lang GraphQL */
         '
-            query groups(
-                $first: Int!
-                $page: Int
-                $id: [ID!]
-                $name: String
-                $active: Boolean
-            ) {
-                groups(
-                    first: $first
-                    page: $page
-                    id: $id
-                    name: $name
-                    active: $active
-                ) {
-                    data {
+           query getGroups {
+                allGroups {
+                    id
+                    name
+                    active
+                    users {
                         id
                         name
-                        active
+                        email
+                        emailVerifiedAt
+                        createdAt
+                        updatedAt
                     }
                 }
             }
@@ -177,11 +171,26 @@ it('can retrieve all groups', function () {
     );
 
     $response->assertSuccessful();
-    $data = $response->json('data.groups.data');
 
-    foreach ($groups as $index => $group) {
-        $this->assertEquals($group->id, $data[$index]['id']);
-        $this->assertEquals($group->name, $data[$index]['name']);
-        $this->assertEquals($group->active, $data[$index]['active']);
-    }
+    $response->assertJson([
+        'data' => [
+            'allGroups' => $groups->map(function ($group) {
+                return [
+                    'id'     => (string)$group->id,
+                    'name'   => $group->name,
+                    'active' => $group->active,
+                    'users'  => $group->users->map(function ($user) {
+                        return [
+                            'id'              => (string)$user->id,
+                            'name'            => $user->name,
+                            'email'           => $user->email,
+                            'emailVerifiedAt' => $user->email_verified_at,
+                            'createdAt'       => $user->created_at,
+                            'updatedAt'       => $user->updated_at,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
+        ],
+    ]);
 });
