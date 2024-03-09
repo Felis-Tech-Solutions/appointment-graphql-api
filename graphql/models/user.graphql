@@ -60,3 +60,22 @@ input UpdateUserBelongsToManyInput {
     syncWithoutDetaching:   [ID!]
     disconnect:             [ID!]
 }
+
+input CreateUserBelongsToManyInput {
+    connect:                [ID!]
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             [ID!]
+}
+
+input CreateUserBelongsTo {
+    connect:                ID!
+}
+
+input UpdateUserBelongsTo {
+    connect:                [ID!]
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             [ID!]
+}
+
