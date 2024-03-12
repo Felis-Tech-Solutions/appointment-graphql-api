@@ -55,7 +55,19 @@ input AppointmentUpdateInput @validator {
     attendees:    UpdateUserBelongsToManyInput
 }
 
+input CreateAppointmentBelongsToManyInput {
+    connect:                [ID!]
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             [ID!]
+}
 
+input UpdateAppointmentBelongsToManyInput {
+    connect:                [ID!]
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             [ID!]
+}
 
 
 

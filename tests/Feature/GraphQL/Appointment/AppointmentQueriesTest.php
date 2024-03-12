@@ -124,65 +124,48 @@ it('can retrieve all appointments', function () {
     $response = $this->graphQL(
     /** @lang GraphQL */
         '
-            query getAppointments(
-                $first: Int!
-                $page: Int
-                $id: [ID!]
-
-            ) {
-                appointments(
-                    first: $first
-                    page: $page
-                    id: $id
-                ) {
-                    data {
+            query allAppointments{
+                allAppointments{
+                    id
+                    title
+                    description
+                    startDateTime
+                    endDateTime
+                    user {
                         id
-                        title
-                        description
-                        startDateTime
-                        endDateTime
-                        user {
-                            id
-                            name
-                        }
-                        attendees {
-                            id
-                            name
-                        }
+                        name
+                    }
+                    attendees {
+                        id
+                        name
                     }
                 }
             }
-        ', variables: [
-        'first' => $count,
-        'page'  => 1,
-    ]
-    );
+        ');
 
     $response->assertSuccessful();
 
     $response->assertJson([
         'data' => [
-            'appointments' => [
-                'data' => $appointments->map(function ($appointment) {
-                    return [
-                        'id'            => (string)$appointment->id,
-                        'title'         => $appointment->title,
-                        'description'   => $appointment->description,
-                        'startDateTime' => $appointment->start_date_time,
-                        'endDateTime'   => $appointment->end_date_time,
-                        'user'          => [
-                            'id'   => (string)$appointment->user->id,
-                            'name' => $appointment->user->name,
-                        ],
-                        'attendees'     => $appointment->attendees->map(function ($attendee) {
-                            return [
-                                'id'   => (string)$attendee->id,
-                                'name' => $attendee->name,
-                            ];
-                        })->toArray(),
-                    ];
-                })->toArray(),
-            ],
+            'allAppointments' => $appointments->map(function ($appointment) {
+                return [
+                    'id'            => (string)$appointment->id,
+                    'title'         => $appointment->title,
+                    'description'   => $appointment->description,
+                    'startDateTime' => $appointment->start_date_time,
+                    'endDateTime'   => $appointment->end_date_time,
+                    'user'          => [
+                        'id'   => (string)$appointment->user->id,
+                        'name' => $appointment->user->name,
+                    ],
+                    'attendees'     => $appointment->attendees->map(function ($attendee) {
+                        return [
+                            'id'   => (string)$attendee->id,
+                            'name' => $attendee->name,
+                        ];
+                    })->toArray(),
+                ];
+            })->toArray(),
         ],
     ]);
 });

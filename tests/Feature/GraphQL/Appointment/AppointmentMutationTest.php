@@ -93,8 +93,8 @@ it('can create an appointment', function () {
     $this->assertDatabaseHas('appointments', [
         'title'           => 'test appointment',
         'description'     => 'test description',
-        'start_date_time' => Carbon::now()->toDateTimeString(),
-        'end_date_time'   => Carbon::now()->addHour()->toDateTimeString(),
+        'start_date_time' => $startDateTime,
+        'end_date_time'   => $endDateTime,
         'user_id'         => $relatedUser->id,
     ]);
 });
@@ -184,7 +184,7 @@ it('can update a appointment', function () {
 });
 
 it('can be deleted', function () {
-    $actingUser = User::factory()->create();
+    $actingUser  = User::factory()->create();
     $appointment = Appointment::factory()->create();
 
     $this->actingAs($actingUser);
