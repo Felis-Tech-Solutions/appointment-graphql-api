@@ -1,4 +1,0 @@
-type Money {
-    amount: Float
-    currency: String
-}

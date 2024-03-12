@@ -6,13 +6,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "cknow/laravel-money": "^7.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "mll-lab/graphql-php-scalars": "^6.2",
-        "mll-lab/laravel-graphiql": "^3.1",
         "nuwave/lighthouse": "^6.33"
     },
     "require-dev": {
