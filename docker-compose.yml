@@ -40,12 +40,9 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.docker.network=traefik-gateway"
-            - "traefik.http.routers.aqa-nginx.rule=Host(`vanrijncoating-portal.localhost`)"
+            - "traefik.http.routers.aqa-nginx.rule=Host(`appointment-api.localhost`)"
             - "traefik.http.routers.aqa-nginx.entrypoints=http"
             - "traefik.http.routers.aqa-nginx.tls=false"
-    #      - "traefik.http.routers.aqa-nginx.rule=Host(`vanrijncoating-portal.dev`)"
-    #      - "traefik.http.routers.aqa-nginx.entrypoints=https"
-    #      - "traefik.http.routers.aqa-nginx.tls=true"
 
     mariadb:
         container_name: aqa-mariadb
@@ -83,5 +80,5 @@ volumes:
 # docker network create traefik-gateway
 networks:
     traefik-gateway:
-        name: traefik-gateway
-        external: true
+        external:
+            name: traefik-gateway

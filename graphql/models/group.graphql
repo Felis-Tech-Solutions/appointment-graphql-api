@@ -1,0 +1,52 @@
+type Group {
+    id: ID
+    name: String
+    active: Boolean
+    createdAt:          DateTime @rename(attribute: "created_at")
+    updatedAt:          DateTime @rename(attribute: "updated_at")
+    deletedAt:          DateTime @rename(attribute: "deleted_at")
+    users: [User!]! @belongsToMany
+}
+
+extend type Query{
+    group(
+        id:      ID      @eq @rules(apply: ["prohibits:name", "required_without:name"])
+    ): Group              @find
+
+    groups(
+        trashed: Trashed @trashed,
+        id:      [ID!]   @in(key: "id") @rules(apply: ["prohibits:name"])
+        name:    String   @like
+        active:  Boolean  @eq
+        orderBy: _        @orderBy(columns:["id", "name", "created_at", "updated_at"])
+    ): [Group!]! @paginate
+
+    allGroups: [Group!]! @all
+}
+
+extend type Mutation {
+    createGroup(input: GroupCreateInput! @spread): Group @create
+    updateGroup(input: GroupUpdateInput! @spread): Group @update
+    deleteGroup(id: ID! @whereKey): Group @delete
+    restoreGroup(id: ID! @whereKey): Group @restore
+}
+
+input GroupCreateInput @validator {
+    name: String!
+    active: Boolean!
+}
+
+input GroupUpdateInput @validator {
+    id:     ID!
+    name:   String
+    active: Boolean
+    users:  UpdateUserBelongsToManyInput
+}
+
+input UpdateGroupBelongsToManyInput {
+    connect:                [ID!]
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             [ID!]
+}
+
