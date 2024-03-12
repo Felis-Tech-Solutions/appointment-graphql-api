@@ -1,0 +1,55 @@
+type AppointmentType {
+    id: ID
+    title: String
+    description: String
+    duration: Int
+    price: String       @rename(attribute: "price")
+    createdAt: DateTime @rename(attribute: "created_at")
+    updatedAt: DateTime @rename(attribute: "updated_at")
+    user: User @belongsTo
+    appointments(page: Int, first: Int): [Appointment!]! @paginate(type: PAGINATOR, model: "Appointment")
+}
+
+extend type Query {
+    appointmentType(
+        id:      ID      @eq @rules(apply: ["prohibits:title", "required_without:title"])
+        title:   String  @eq @rules(apply: ["prohibits:id", "required_without:id"])
+    ): AppointmentType @find
+
+    appointmentTypes(
+        id:             [ID!] @in(key: "id")     @rules(apply: ["prohibits:title"])
+        title:          String @in(key: "title") @rules(apply: ["prohibits:id"])
+        duration:       Int
+        price:          Int
+        orderBy:        _       @orderBy(columns: ["id", "title", "duration", "price", "created_at", "updated_at"])
+    ): [AppointmentType!]! @paginate
+
+    allAppointmentTypes: [AppointmentType!]! @all
+}
+
+extend type Mutation {
+    createAppointmentType(input: AppointmentTypeCreateInput! @spread): AppointmentType @create
+    updateAppointmentType(input: AppointmentTypeUpdateInput! @spread): AppointmentType @update
+    deleteAppointmentType(id: ID! @whereKey): AppointmentType @delete
+    restoreAppointmentType(id: ID! @whereKey): AppointmentType @restore
+}
+
+input AppointmentTypeCreateInput @validator {
+    title:         String
+    description:   String
+    duration:      Int
+    price:         Int
+    user:          CreateUserBelongsTo
+    appointments:  CreateAppointmentBelongsToManyInput
+}
+
+input AppointmentTypeUpdateInput @validator {
+    id:           ID!
+    title:        String
+    description:  String
+    duration:     Int
+    price:        Int
+    user:         UpdateUserBelongsTo
+    appointments: UpdateAppointmentBelongsToManyInput
+}
+
