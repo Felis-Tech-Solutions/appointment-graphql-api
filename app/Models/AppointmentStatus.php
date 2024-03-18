@@ -20,10 +20,8 @@ class AppointmentStatus extends Model
     use HasFactory;
 
     protected $guarded = [];
-    
-    protected $table = 'appointment_statuses';
 
-    //    $table = 'appointment_statuses';
+    protected $table = 'appointment_statuses';
 
     public function appointments(): HasMany
     {

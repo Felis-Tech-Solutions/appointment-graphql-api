@@ -11,7 +11,6 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('appointments', function (Blueprint $table) {
-//            $table->foreignId('status_id')->nullable()->after('user_id')->constrained();
             $table->unsignedBigInteger('status_id')->nullable()->after('user_id');
 
             $table->foreign('status_id')->references('id')->on('appointment_statuses')->onDelete('set null');
