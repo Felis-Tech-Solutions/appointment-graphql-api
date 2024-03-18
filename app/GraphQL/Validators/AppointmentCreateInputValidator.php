@@ -27,6 +27,7 @@ final class AppointmentCreateInputValidator extends Validator
             'attendees.syncWithoutDetaching.*' => ['numeric'],
             'attendees.disconnect'             => ['sometimes', 'array'],
             'attendees.disconnect.*'           => ['numeric'],
+            'status.connect'                   => ['required', 'numeric'],
         ];
     }
 }

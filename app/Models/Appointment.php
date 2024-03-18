@@ -10,13 +10,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /**
  * App\Models\Appointment
  *
- * @property int         $id
- * @property string|null $title
- * @property bool|null   $description
- * @property string      $start_date_time
- * @property string      $end_date_time
- * @property string      $created_at
- * @property string      $updated_at
+ * @property int               $id
+ * @property string|null       $title
+ * @property bool|null         $description
+ * @property User              $user
+ * @property User[]            $attendees
+ * @property AppointmentStatus $status
+ * @property string            $start_date_time
+ * @property string            $end_date_time
+ * @property string            $created_at
+ * @property string            $updated_at
  *
  * */
 class Appointment extends Model
@@ -33,5 +36,10 @@ class Appointment extends Model
     public function attendees(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(AppointmentStatus::class, 'status_id');
     }
 }
