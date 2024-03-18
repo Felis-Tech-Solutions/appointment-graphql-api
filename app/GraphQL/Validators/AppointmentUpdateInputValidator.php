@@ -14,13 +14,15 @@ final class AppointmentUpdateInputValidator extends Validator
     public function rules(): array
     {
         return [
-            'id'            => ['required', 'exists:appointments,id',],
-            'title'         => ['string', 'max:255',],
-            'description'   => ['nullable', 'string',],
-            'startDateTime' => ['date', 'after:now',],
-            'endDateTime'   => ['date', 'after:start_date_time',],
-            'userId'        => ['exists:users,id',],
-            'attendees'     => ['nullable', 'array', 'exists:users,id',],
+            'id'                => ['required', 'exists:appointments,id',],
+            'title'             => ['string', 'max:255',],
+            'description'       => ['nullable', 'string',],
+            'startDateTime'     => ['date', 'after:now',],
+            'endDateTime'       => ['date', 'after:start_date_time',],
+            'user.connect'      => ['nullable', 'numeric'],
+            'attendees'         => ['nullable', 'array', 'exists:users,id',],
+            'status.connect'    => ['nullable', 'numeric'],
+            'status.disconnect' => ['nullable', 'boolean'],
         ];
     }
 }

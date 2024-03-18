@@ -3,11 +3,13 @@
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Appointment;
+use App\Models\AppointmentStatus;
 
 it('can create an appointment', function () {
     $actingUser    = User::factory()->create();
     $relatedUser   = User::factory()->create();
     $attendeeUsers = User::factory()->count(3)->create();
+    $status        = AppointmentStatus::factory()->create();
 
     $startDateTime = Carbon::now()->toDateTimeString();
     $endDateTime   = Carbon::now()->addHour()->toDateTimeString();
@@ -21,7 +23,7 @@ it('can create an appointment', function () {
             'startDateTime' => $startDateTime,
             'endDateTime'   => $endDateTime,
             'user'          => [
-                'connect' => $relatedUser->id,
+                'connect' => $relatedUser->getKey(),
             ],
             'attendees'     => [
                 'syncWithoutDetaching' => [
@@ -30,7 +32,9 @@ it('can create an appointment', function () {
                     $attendeeUsers[2]->id,
                 ],
             ],
-
+            'status'        => [
+                'connect' => $status->getKey(),
+            ],
         ],
     ];
 
@@ -51,6 +55,10 @@ it('can create an appointment', function () {
                         name
                     }
                     attendees {
+                        id
+                        name
+                    }
+                    status {
                         id
                         name
                     }
@@ -86,6 +94,10 @@ it('can create an appointment', function () {
                         'name' => $attendeeUsers[2]->name,
                     ],
                 ],
+                'status'        => [
+                    'id'   => (string)$status->id,
+                    'name' => $status->name,
+                ],
             ],
         ],
     ]);
@@ -102,6 +114,7 @@ it('can create an appointment', function () {
 it('can update a appointment', function () {
     $actingUser    = User::factory()->create();
     $attendeeUsers = User::factory()->count(3)->create();
+    $newUser       = User::factory()->create();
 
     $appointment = Appointment::factory()->create();
 
@@ -115,8 +128,11 @@ it('can update a appointment', function () {
 
     $variables = [
         'input' => [
-            'id'    => $appointment->id,
+            'id'    => $appointment->getKey(),
             'title' => 'updated test appointment',
+            'user'  => [
+                'connect' => $newUser->getKey(),
+            ],
         ],
     ];
 
@@ -150,26 +166,26 @@ it('can update a appointment', function () {
     $response->assertJson([
         'data' => [
             'updateAppointment' => [
-                'id'            => (string)$appointment->id,
+                'id'            => (string)$appointment->getKey(),
                 'title'         => 'updated test appointment',
                 'description'   => $appointment->description,
                 'startDateTime' => $appointment->start_date_time,
                 'endDateTime'   => $appointment->end_date_time,
                 'user'          => [
-                    'id'   => (string)$appointment->user->id,
-                    'name' => $appointment->user->name,
+                    'id'   => (string)$newUser->getKey(),
+                    'name' => $newUser->name,
                 ],
                 'attendees'     => [
                     [
-                        'id'   => (string)$attendeeUsers[0]->id,
+                        'id'   => (string)$attendeeUsers[0]->getKey(),
                         'name' => $attendeeUsers[0]->name,
                     ],
                     [
-                        'id'   => (string)$attendeeUsers[1]->id,
+                        'id'   => (string)$attendeeUsers[1]->getKey(),
                         'name' => $attendeeUsers[1]->name,
                     ],
                     [
-                        'id'   => (string)$attendeeUsers[2]->id,
+                        'id'   => (string)$attendeeUsers[2]->getKey(),
                         'name' => $attendeeUsers[2]->name,
                     ],
                 ],
@@ -178,7 +194,7 @@ it('can update a appointment', function () {
     ]);
 
     $this->assertDatabaseHas('appointments', [
-        'id'    => $appointment->id,
+        'id'    => $appointment->getKey(),
         'title' => 'updated test appointment',
     ]);
 });
@@ -190,7 +206,7 @@ it('can be deleted', function () {
     $this->actingAs($actingUser);
 
     $variables = [
-        'id' => $appointment->id,
+        'id' => $appointment->getKey(),
     ];
 
     $response = $this->graphQL(
@@ -217,6 +233,94 @@ it('can be deleted', function () {
     ]);
 
     $this->assertDatabaseMissing('appointments', [
-        'id' => $appointment->id,
+        'id' => $appointment->getKey(),
     ]);
 });
+
+it('can link a appointment to a status', function () {
+    $appointmentStatus = AppointmentStatus::factory()->create();
+    $appointment       = Appointment::factory()->create();
+
+    $variables = [
+        'input' => [
+            'id'     => $appointment->getKey(),
+            'status' => [
+                'connect' => $appointmentStatus->getKey(),
+            ],
+        ],
+    ];
+
+    $response = $this->graphQL(
+    /** @lang GraphQL */
+        '
+            mutation updateAppointment($input: AppointmentUpdateInput!) {
+                updateAppointment(input: $input) {
+                    id
+                    title
+                    status {
+                        id
+                        name
+                    }
+                }
+            }
+        ', variables: $variables
+    );
+
+    $response->assertJson([
+        'data' => [
+            'updateAppointment' => [
+                'id'     => (string)$appointment->getKey(),
+                'title'  => $appointment->title,
+                'status' => [
+                    'id'   => (string)$appointmentStatus->getKey(),
+                    'name' => $appointmentStatus->name,
+                ],
+            ],
+        ],
+    ]);
+});
+
+it('can unlink appointments to a status', function () {
+    $appointmentStatus = AppointmentStatus::factory()->create();
+    $appointment       = Appointment::factory()->create();
+
+    $appointment->status()->associate($appointmentStatus);
+    $appointment->save();
+
+    $variables = [
+        'input' => [
+            'id'     => $appointment->getKey(),
+            'status' => [
+                'disconnect' => true,
+            ],
+        ],
+    ];
+
+    $response = $this->graphQL(
+    /** @lang GraphQL */
+        '
+            mutation updateAppointment($input: AppointmentUpdateInput!) {
+                updateAppointment(input: $input) {
+                    id
+                    title
+                    status {
+                        id
+                        name
+                    }
+                }
+            }
+        ', variables: $variables
+    );
+
+    $response->assertJson([
+        'data' => [
+            'updateAppointment' => [
+                'id'     => (string)$appointment->getKey(),
+                'title'  => $appointment->title,
+                'status' => null,
+            ],
+        ],
+    ]);
+
+});
+

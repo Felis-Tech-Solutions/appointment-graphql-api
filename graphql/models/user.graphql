@@ -73,7 +73,7 @@ input CreateUserBelongsTo {
 }
 
 input UpdateUserBelongsTo {
-    connect:                [ID!]
+    connect:                ID!
     sync:                   [ID!]
     syncWithoutDetaching:   [ID!]
     disconnect:             [ID!]

@@ -1,0 +1,44 @@
+type AppointmentStatus {
+    id: ID!
+    name: String!
+    createdAt: DateTime! @rename(attribute: "created_at")
+    updatedAt: DateTime! @rename(attribute: "updated_at")
+    appointments: [Appointment!]! @hasMany
+}
+
+extend type Query {
+    appointmentStatus(id: ID! @eq): AppointmentStatus @find
+    appointmentStatuses(
+        id: [ID!] @in(key: "id") @rules(apply: ["prohibits:name"])
+        name: String @eq
+        orderBy: _ @orderBy(columns: ["id", "name", "created_at", "updated_at"])
+    ): [AppointmentStatus!]! @paginate
+
+    allAppointmentStatuses: [AppointmentStatus!]! @all
+}
+
+extend type Mutation {
+    createAppointmentStatus(input: AppointmentStatusCreateInput! @spread): AppointmentStatus @create
+    updateAppointmentStatus(input: AppointmentStatusUpdateInput! @spread): AppointmentStatus @update
+    deleteAppointmentStatus(id: ID! @eq): AppointmentStatus @delete
+}
+
+input AppointmentStatusCreateInput @validator {
+    name: String!
+}
+
+input AppointmentStatusUpdateInput @validator {
+    id: ID!
+    name: String
+}
+
+input UpdateAppointmentStatusBelongsTo {
+    connect:                ID
+    sync:                   [ID!]
+    syncWithoutDetaching:   [ID!]
+    disconnect:             Boolean
+}
+
+input CreateAppointmentStatusBelongsTo {
+    connect:                ID!
+}
