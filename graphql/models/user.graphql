@@ -29,6 +29,8 @@ extend type Query{
     me: User @auth
 
     allUsers: [User!]! @all
+
+    getAvailableSlots(user_id: ID!): [DaySlots!]! @field(resolver: "App\\GraphQL\\Queries\\GetAvailableSlots")
 }
 
 extend type Mutation {

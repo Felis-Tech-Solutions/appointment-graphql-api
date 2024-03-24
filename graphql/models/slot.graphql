@@ -1,0 +1,4 @@
+type Slot{
+    start_time: String
+    end_time: String
+}

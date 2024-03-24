@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Appointment::class);
     }
+
+    public function slotRules(): belongsToMany
+    {
+        return $this->belongsToMany(SlotRule::class);
+    }
+
+    public function breakRules(): HasMany
+    {
+        return $this->hasMany(BreakRule::class);
+    }
 }
