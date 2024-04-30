@@ -1,0 +1,22 @@
+type SlotRule {
+    id: ID!
+    ruleName: String @rename(attribute: "rule_name")
+    dayOfTeWeek: String @rename(attribute: "day_of_te_week")
+    startTime: DateTime @rename(attribute: "start_time")
+    endTime: DateTime @rename(attribute: "end_time")
+    slotDuration: Int @rename(attribute: "slot_duration")
+    timeAfterAppointment: Int @rename(attribute: "time_after_appointment")
+}
+
+extend type Query {
+    slotRules(
+        id: [ID!] @in(key: "id") @rules(apply: ["prohibits:ruleName"])
+        ruleName: String @in(key: "ruleName") @rules(apply: ["prohibits:id"])
+        dayOfTeWeek: String @in(key: "dayOfTeWeek") @rules(apply: ["prohibits:id"])
+        startTime: DateTime @rename(attribute: "startTime")
+        endTime: DateTime @rename(attribute: "endTime")
+        slotDuration: Int
+        timeAfterAppointment: Int
+        orderBy: _ @orderBy(columns: ["id", "ruleName", "dayOfTeWeek", "startTime", "endTime", "slotDuration", "timeAfterAppointment"])
+    ): [SlotRule!]! @paginate
+}

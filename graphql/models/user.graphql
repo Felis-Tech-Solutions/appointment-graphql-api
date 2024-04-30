@@ -7,6 +7,7 @@ type User {
     updatedAt:          DateTime @rename(attribute: "updated_at")
     deletedAt:          DateTime @rename(attribute: "deleted_at")
     groups:             [Group!]! @belongsToMany
+    slotRules:          [SlotRule!]! @belongsToMany
 }
 
 extend type Query{
@@ -30,7 +31,7 @@ extend type Query{
 
     allUsers: [User!]! @all
 
-    getAvailableSlots(user_id: ID!): [DaySlots!]! @field(resolver: "App\\GraphQL\\Queries\\GetAvailableSlots")
+    getAvailableSlots(user_id: ID!, reference_date: String!): [DaySlots!]! @field(resolver: "App\\GraphQL\\Queries\\GetAvailableSlots")
 }
 
 extend type Mutation {

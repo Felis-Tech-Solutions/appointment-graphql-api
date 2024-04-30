@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\User;
 use App\Models\Appointment;
 use App\Models\AppointmentStatus;
 
 it('can retrieve a single appointment status', function () {
+    $this->actingAs(User::factory()->create());
     $appointmentStatus = AppointmentStatus::factory()->create();
 
     $response = $this->graphQL(
@@ -31,6 +33,7 @@ it('can retrieve a single appointment status', function () {
 });
 
 it('can retrieve several appointment statuses', function () {
+    $this->actingAs(User::factory()->create());
     $appointmentStatus = AppointmentStatus::factory()->count(10)->create();
 
     $variables = [
@@ -65,6 +68,7 @@ it('can retrieve several appointment statuses', function () {
 });
 
 it('can retrieve all appointment statuses', function () {
+    $this->actingAs(User::factory()->create());
     $appointmentStatuses = AppointmentStatus::factory()->count(5)->create();
 
     $response = $this->graphQL(
@@ -90,6 +94,7 @@ it('can retrieve all appointment statuses', function () {
 });
 
 it('can retrieve an appointment status by name with appointments linked', function () {
+    $this->actingAs(User::factory()->create());
     $appointmentStatus = AppointmentStatus::factory()->create();
     $appointmentStatus->appointments()->createMany(
         Appointment::factory()->count(5)->make()->toArray()

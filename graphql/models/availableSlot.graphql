@@ -1,0 +1,4 @@
+type AvailableSlot {
+    startTime: String!
+    endTime: String!
+}

@@ -4,6 +4,8 @@ use App\Models\User;
 use App\Models\Group;
 
 it('can retrieve single group', function () {
+    $this->actingAs(User::factory()->create());
+
     $group = Group::factory()->create();
 
     $variables = [
@@ -36,6 +38,8 @@ it('can retrieve single group', function () {
 });
 
 it('can retrieve several groups', function () {
+    $this->actingAs(User::factory()->create());
+
     $count  = 10;
     $groups = Group::factory()->count($count)->create();
 
@@ -82,6 +86,8 @@ it('can retrieve several groups', function () {
 });
 
 it('can get a user by name', function () {
+    $this->actingAs(User::factory()->create());
+
     $groupName = "Test group name";
 
     $group = Group::factory([
@@ -140,6 +146,8 @@ it('can get a user by name', function () {
 });
 
 it('can retrieve all groups', function () {
+    $this->actingAs(User::factory()->create());
+
     $count  = 10;
     $groups = Group::factory()->count($count)->create();
 

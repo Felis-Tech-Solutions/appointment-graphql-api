@@ -26,6 +26,10 @@ it('can retrieve single users', closure: function () {
                         name
                         active
                     }
+                    slotRules{
+                        id
+                        ruleName
+                    }
                   }
             }
         ', variables: $variables
@@ -43,6 +47,7 @@ it('can retrieve single users', closure: function () {
                 'updatedAt'       => $user->updated_at,
                 'deletedAt'       => $user->deleted_at,
                 'groups'          => [],
+                'slotRules'       => []
             ],
         ],
     ]);

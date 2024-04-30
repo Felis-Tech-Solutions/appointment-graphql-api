@@ -1,4 +1,5 @@
 type DaySlots {
-    day: String
+    day: String,
+    date: String
     slots: [Slot!]
 }

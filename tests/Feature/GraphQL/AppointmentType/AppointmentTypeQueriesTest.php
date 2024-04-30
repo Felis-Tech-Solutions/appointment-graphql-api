@@ -139,6 +139,7 @@ it('can get all appointment types', function () {
 
 it('can get all appointment types with users', function () {
     $user             = User::factory()->create();
+
     $appointmentTypes = AppointmentType::factory()->count(10)->create();
 
     $appointmentTypes->each(function (AppointmentType $appointmentType) use ($user) {

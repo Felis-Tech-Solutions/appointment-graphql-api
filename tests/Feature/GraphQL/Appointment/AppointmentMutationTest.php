@@ -238,6 +238,9 @@ it('can be deleted', function () {
 });
 
 it('can link a appointment to a status', function () {
+    $actingUser  = User::factory()->create();
+    $this->actingAs($actingUser);
+
     $appointmentStatus = AppointmentStatus::factory()->create();
     $appointment       = Appointment::factory()->create();
 
@@ -281,6 +284,9 @@ it('can link a appointment to a status', function () {
 });
 
 it('can unlink appointments to a status', function () {
+    $actingUser  = User::factory()->create();
+    $this->actingAs($actingUser);
+
     $appointmentStatus = AppointmentStatus::factory()->create();
     $appointment       = Appointment::factory()->create();
 

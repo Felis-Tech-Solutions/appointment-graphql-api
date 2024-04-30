@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Appointment;
 
 it('can retrieve single appointment', function () {
+    $this->actingAs(User::factory()->create());
     $appointment = Appointment::factory()->create();
 
     $variables = [
@@ -59,6 +60,7 @@ it('can retrieve single appointment', function () {
 });
 
 it('can retrieve several appointments', function () {
+    $this->actingAs(User::factory()->create());
     $count        = 10;
     $appointments = Appointment::factory()->count($count)->create();
 
@@ -118,6 +120,7 @@ it('can retrieve several appointments', function () {
 });
 
 it('can retrieve all appointments', function () {
+    $this->actingAs(User::factory()->create());
     $count        = 10;
     $appointments = Appointment::factory()->count($count)->create();
 
@@ -171,6 +174,7 @@ it('can retrieve all appointments', function () {
 });
 
 it('can retrieve a appointments by user', function () {
+    $this->actingAs(User::factory()->create());
     $user = User::factory()->create();
 
     $appointments = Appointment::factory()->count(10)->create([
@@ -246,6 +250,7 @@ it('can retrieve a appointments by user', function () {
 });
 
 it('can retrieve a appointments by user attendee ', function () {
+    $this->actingAs(User::factory()->create());
     $user = User::factory()->create();
 
     $appointments = Appointment::factory()->count(10)->create();

@@ -2,15 +2,17 @@
 
 namespace App\GraphQL\Queries;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Services\AvailableSlotsService;
 
 final class GetAvailableSlots
 {
-    /** @param  array{}  $args */
+    /** @param array{} $args */
     public function __invoke(null $_, array $args): ?array
     {
-        $userId = $args['user_id'];
+        $userId        = $args['user_id'];
+        $referenceDate = Carbon::parse($args['reference_date']);
 
         /* @var User $user */
         $user = User::find($userId);
@@ -24,21 +26,21 @@ final class GetAvailableSlots
 
         $availableSlotsService = new AvailableSlotsService();
 
-        $slotsServiceByDay =  $availableSlotsService->getAvailableSlots($slotRules, $breakRules);
+        $slotsServiceByDay = $availableSlotsService->getAvailableSlots($slotRules, $breakRules, $referenceDate);
 
         $result = [];
-        foreach ($slotsServiceByDay as $day => $slots) {
+        foreach ($slotsServiceByDay as $day => $data) {
             $result[] = [
-                'day' => $day,
+                'day'   => $day,
+                'date'  => $data['date'],
                 'slots' => array_map(function ($slot) {
                     return [
-                        'start_time' => $slot['start_time'],
-                        'end_time' => $slot['end_time'],
+                        'startTime' => $slot['startTime'],
+                        'endTime'   => $slot['endTime'],
                     ];
-                }, $slots),
+                }, $data['slots']),
             ];
         }
-
         return $result;
     }
 }
