@@ -17,11 +17,13 @@ class AppointmentFactory extends Factory
      */
     public function definition(): array
     {
+        $startDateTime = $this->faker->dateTimeThisMonth; // Get a DateTime object
+
         return [
             'title'           => $this->faker->sentence,
             'description'     => $this->faker->paragraph,
-            'start_date_time' => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
-            'end_date_time'   => $this->faker->dateTimeThisMonth->format('Y-m-d H:i:s'),
+            'start_date_time' => $startDateTime->format('Y-m-d H:i:s'),
+            'end_date_time'   => $startDateTime->modify('+2 hours')->format('Y-m-d H:i:s'),
             'user_id'         => User::factory()->create()->getKey(),
         ];
     }

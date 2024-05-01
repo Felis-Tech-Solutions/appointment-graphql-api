@@ -7,7 +7,6 @@ use App\Models\Group;
 use App\Models\Appointment;
 use Illuminate\Database\Seeder;
 use App\Models\AppointmentStatus;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class UserSeeder extends Seeder
             'email' => 'contact@felis-ts.nl',
         ], [
             'name'      => 'Max Felis',
-            'password'  => Hash::make('password'),
+            'password'  => bcrypt('password'),
             'google_id' => '107576223714688076020',
         ]);
 

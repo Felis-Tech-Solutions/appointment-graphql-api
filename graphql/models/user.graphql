@@ -8,6 +8,7 @@ type User {
     deletedAt:          DateTime @rename(attribute: "deleted_at")
     groups:             [Group!]! @belongsToMany
     slotRules:          [SlotRule!]! @belongsToMany
+    appointments:       [Appointment!]! @hasMany
 }
 
 extend type Query{
