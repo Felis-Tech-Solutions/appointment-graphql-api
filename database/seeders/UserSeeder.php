@@ -19,8 +19,9 @@ class UserSeeder extends Seeder
         $user = User::updateOrCreate([
             'email' => 'contact@felis-ts.nl',
         ], [
-            'name'     => 'Felis TS',
-            'password' => Hash::make('password'),
+            'name'      => 'Max Felis',
+            'password'  => Hash::make('password'),
+            'google_id' => '107576223714688076020',
         ]);
 
         $user->email_verified_at = now();

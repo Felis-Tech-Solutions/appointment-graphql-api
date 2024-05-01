@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int         $id
  * @property string      $name
  * @property string      $email
+ * @property string      $google_id
  * @property Carbon|null $email_verified_at
  * @property string      $password
  * @property string      $remember_token
